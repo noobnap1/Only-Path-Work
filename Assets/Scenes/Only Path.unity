@@ -1551,6 +1551,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.x
       value: 0.08744
       objectReference: {fileID: 0}
+    - target: {fileID: -85744201872177665, guid: 38fecc5895fd98a489adcbbad0460173, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: f8df5596ac5dadd42b0c12cf908c4dc6, type: 2}
     - target: {fileID: 919132149155446097, guid: 38fecc5895fd98a489adcbbad0460173, type: 3}
       propertyPath: m_Name
       value: simple_small_house
