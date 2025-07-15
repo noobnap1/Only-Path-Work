@@ -1495,6 +1495,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -8915844111472045387, guid: 38fecc5895fd98a489adcbbad0460173, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: -6271897200390792742, guid: 38fecc5895fd98a489adcbbad0460173, type: 3}
     - target: {fileID: -8679921383154817045, guid: 38fecc5895fd98a489adcbbad0460173, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.029327
@@ -1555,6 +1559,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.x
       value: 0.08744
       objectReference: {fileID: 0}
+    - target: {fileID: -4821313301634500170, guid: 38fecc5895fd98a489adcbbad0460173, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: -6271897200390792742, guid: 38fecc5895fd98a489adcbbad0460173, type: 3}
     - target: {fileID: -85744201872177665, guid: 38fecc5895fd98a489adcbbad0460173, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -1563,6 +1571,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: simple_small_house
       objectReference: {fileID: 0}
+    - target: {fileID: 4882656495228533285, guid: 38fecc5895fd98a489adcbbad0460173, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: -6271897200390792742, guid: 38fecc5895fd98a489adcbbad0460173, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
