@@ -4,32 +4,48 @@ using System.Collections;
 
 public class DialogueManager : MonoBehaviour
 {
-    public string dialogueBoxPrefabName = "DialogueBox"; // prefab name in Resources
+    [Header("Settings")]
     public float letterDelay = 0.05f;
     public float fadeTime = 0.15f;
 
     private static DialogueManager current;
 
-    private GameObject dialogueBox;
+    private CanvasGroup canvasGroup;
     private TextMeshProUGUI dialogueText;
     private AudioSource audioSource;
     private Coroutine typingCoroutine;
 
-    void Awake()
+    private void Awake()
     {
-        if (current == null)
-            current = this;
-        else if (current != this)
-            Destroy(gameObject); // enforce singleton
+        current = this;
+
+        canvasGroup = GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+            canvasGroup = gameObject.AddComponent<CanvasGroup>();
+
+        Transform textTransform = transform.Find("DialogueText");
+        if (textTransform == null)
+        {
+            Debug.LogError("DialogueText child not found.");
+            return;
+        }
+
+        dialogueText = textTransform.GetComponent<TextMeshProUGUI>();
+        audioSource = GetComponent<AudioSource>() ?? gameObject.AddComponent<AudioSource>();
+
+        canvasGroup.alpha = 0f;
+        gameObject.SetActive(false); // Start hidden
     }
 
-    // Static entry point - call from anywhere
     public static void Show(string text, string soundName)
     {
-        if (current != null)
-            current.StartDialogue(text, soundName);
-        else
-            Debug.LogWarning("DialogueManager instance not found in scene.");
+        if (current == null)
+        {
+            Debug.LogWarning("DialogueManager not found in scene.");
+            return;
+        }
+
+        current.StartDialogue(text, soundName);
     }
 
     public void StartDialogue(string dialogue, string soundName)
@@ -37,60 +53,28 @@ public class DialogueManager : MonoBehaviour
         if (typingCoroutine != null)
         {
             StopCoroutine(typingCoroutine);
-            CleanupDialogueBox();
+            CleanupDialogue();
         }
 
         AudioClip typeSound = Resources.Load<AudioClip>($"SpeechSounds/{soundName}");
         if (typeSound == null)
             Debug.LogWarning($"Sound '{soundName}' not found in Resources/SpeechSounds/");
 
-        ShowDialogue(dialogue, typeSound);
-    }
-
-    private void ShowDialogue(string dialogue, AudioClip typeSound)
-    {
-        // Instantiate DialogueBox prefab from Resources every time
-        GameObject prefab = Resources.Load<GameObject>(dialogueBoxPrefabName);
-        if (prefab == null)
-        {
-            Debug.LogError($"DialogueBox prefab '{dialogueBoxPrefabName}' not found in Resources.");
-            return;
-        }
-
-        dialogueBox = Instantiate(prefab);
-        dialogueBox.name = "DialogueBox (Runtime)";
-
-        Transform textTransform = dialogueBox.transform.Find("DialogueText");
-        if (textTransform == null)
-        {
-            Debug.LogError("DialogueText not found in DialogueBox prefab.");
-            return;
-        }
-
-        dialogueText = textTransform.GetComponent<TextMeshProUGUI>();
-        audioSource = dialogueBox.GetComponent<AudioSource>();
-        if (audioSource == null)
-            audioSource = dialogueBox.AddComponent<AudioSource>();
-
-        if (dialogueBox.GetComponent<CanvasGroup>() == null)
-            dialogueBox.AddComponent<CanvasGroup>();
-
+        gameObject.SetActive(true);
         typingCoroutine = StartCoroutine(TypeDialogue(dialogue, typeSound));
     }
 
     private IEnumerator TypeDialogue(string sentence, AudioClip typeSound)
     {
-        CanvasGroup cg = dialogueBox.GetComponent<CanvasGroup>();
-        cg.alpha = 0f;
+        canvasGroup.alpha = 0f;
         dialogueText.text = "";
 
-        // Fade In
         for (float t = 0; t < fadeTime; t += Time.deltaTime)
         {
-            cg.alpha = Mathf.Lerp(0, 1, t / fadeTime);
+            canvasGroup.alpha = Mathf.Lerp(0, 1, t / fadeTime);
             yield return null;
         }
-        cg.alpha = 1f;
+        canvasGroup.alpha = 1f;
 
         float lastSoundTime = -1f;
         float soundCooldown = 0.05f;
@@ -108,26 +92,21 @@ public class DialogueManager : MonoBehaviour
             yield return new WaitForSeconds(letterDelay);
         }
 
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(0.5f);
 
-        // Fade Out
         for (float t = 0; t < fadeTime; t += Time.deltaTime)
         {
-            cg.alpha = Mathf.Lerp(1, 0, t / fadeTime);
+            canvasGroup.alpha = Mathf.Lerp(1, 0, t / fadeTime);
             yield return null;
         }
 
-        CleanupDialogueBox();
+        CleanupDialogue();
     }
 
-    private void CleanupDialogueBox()
+    private void CleanupDialogue()
     {
-        if (dialogueBox != null)
-            Destroy(dialogueBox);
-
-        dialogueBox = null;
-        dialogueText = null;
-        audioSource = null;
+        dialogueText.text = "";
+        gameObject.SetActive(false);
         typingCoroutine = null;
     }
 
@@ -136,6 +115,6 @@ public class DialogueManager : MonoBehaviour
         if (typingCoroutine != null)
             StopCoroutine(typingCoroutine);
 
-        CleanupDialogueBox();
+        CleanupDialogue();
     }
 }
