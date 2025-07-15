@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class DialogueTrigger : MonoBehaviour
 {
-    [TextArea] public string dialogueText = "Hello there!";
-    public string soundName = "Boy";
+    [TextArea] public string dialogueText = "{Dialogue}";
+    public string soundName = "{Sound}";
 
     private bool playerIsNear = false;
 

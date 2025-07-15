@@ -863,6 +863,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 471b324f92bec754f93408af33dc63b6, type: 3}
       insertIndex: -1
       addedObject: {fileID: 780992322}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 471b324f92bec754f93408af33dc63b6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 780992323}
   m_SourcePrefab: {fileID: 100100000, guid: 471b324f92bec754f93408af33dc63b6, type: 3}
 --- !u!1 &780992320 stripped
 GameObject:
@@ -915,6 +918,20 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &780992323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 780992320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d3f007ee9b204649ad99912c7486a0f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogueText: Why are you talking to me
+  soundName: Boy
 --- !u!1001 &785066040
 PrefabInstance:
   m_ObjectHideFlags: 0
