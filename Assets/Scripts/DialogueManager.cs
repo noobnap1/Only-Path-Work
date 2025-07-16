@@ -17,7 +17,6 @@ public class DialogueManager : MonoBehaviour
     private TextMeshProUGUI dialogueText;
     private AudioSource audioSource;
     private Coroutine typingCoroutine;
-    private GameObject dialogueBoxInstance;
 
     private void Awake()
     {
@@ -30,14 +29,13 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        dialogueBoxInstance = Instantiate(dialogueBoxPrefab, transform);
-        dialogueBoxInstance.SetActive(false);
+        dialogueBoxPrefab.SetActive(false);
 
-        canvasGroup = dialogueBoxInstance.GetComponent<CanvasGroup>();
+        canvasGroup = dialogueBoxPrefab.GetComponent<CanvasGroup>();
         if (canvasGroup == null)
-            canvasGroup = dialogueBoxInstance.AddComponent<CanvasGroup>();
+            canvasGroup = dialogueBoxPrefab.AddComponent<CanvasGroup>();
 
-        Transform textTransform = dialogueBoxInstance.transform.Find("DialogueText");
+        Transform textTransform = dialogueBoxPrefab.transform.Find("DialogueText");
         if (textTransform == null)
         {
             Debug.LogError("DialogueText child not found in dialogue box prefab.");
@@ -45,7 +43,7 @@ public class DialogueManager : MonoBehaviour
         }
 
         dialogueText = textTransform.GetComponent<TextMeshProUGUI>();
-        audioSource = dialogueBoxInstance.GetComponent<AudioSource>() ?? dialogueBoxInstance.AddComponent<AudioSource>();
+        audioSource = dialogueBoxPrefab.GetComponent<AudioSource>() ?? dialogueBoxPrefab.AddComponent<AudioSource>();
 
         canvasGroup.alpha = 0f;
     }
@@ -73,7 +71,7 @@ public class DialogueManager : MonoBehaviour
         if (typeSound == null)
             Debug.LogWarning($"Sound '{soundName}' not found in Resources/SpeechSounds/");
 
-        dialogueBoxInstance.SetActive(true);
+        dialogueBoxPrefab.SetActive(true);
         typingCoroutine = StartCoroutine(TypeDialogue(dialogue, typeSound));
     }
 
@@ -121,8 +119,8 @@ public class DialogueManager : MonoBehaviour
         if (dialogueText != null)
             dialogueText.text = "";
 
-        if (dialogueBoxInstance != null)
-            dialogueBoxInstance.SetActive(false);
+        if (dialogueBoxPrefab != null)
+            dialogueBoxPrefab.SetActive(false);
 
         typingCoroutine = null;
     }
