@@ -1,53 +1,54 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class MouseLook : MonoBehaviour
 {
-    [Header("References")]
     public Transform playerBody;
+    public float mouseSensitivity = 100f;
 
-    [Header("Mouse Settings")]
-    public float mouseSensitivity = 200f;
-
-    [Header("Look Limits")]
     private float xRotation = 0f;
 
-    [Header("Sway Settings")]
     public float swayAmount = 2f;
     public float swaySmooth = 6f;
     public float swayClamp = 5f;
 
+    public InputActionReference lookActionRef; // Assign Player/Look here
+
     private Vector2 currentMouseDelta;
     private Vector2 smoothedMouseDelta;
+
+    private void OnEnable()
+    {
+        lookActionRef?.action.Enable();
+    }
+
+    private void OnDisable()
+    {
+        lookActionRef?.action.Disable();
+    }
 
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
-
         if (playerBody == null && transform.parent != null)
             playerBody = transform.parent;
     }
 
     void Update()
     {
-        // --- Get raw mouse delta ---
-        currentMouseDelta.x = Input.GetAxisRaw("Mouse X");
-        currentMouseDelta.y = Input.GetAxisRaw("Mouse Y");
+        if (lookActionRef == null) return;
 
-        // --- Smooth mouse movement ---
+        currentMouseDelta = lookActionRef.action.ReadValue<Vector2>();
         smoothedMouseDelta = Vector2.Lerp(smoothedMouseDelta, currentMouseDelta, Time.deltaTime * 12f);
 
-        // --- Apply sensitivity and deltaTime ---
         float mouseX = smoothedMouseDelta.x * mouseSensitivity * Time.deltaTime;
         float mouseY = smoothedMouseDelta.y * mouseSensitivity * Time.deltaTime;
 
-        // --- Rotate player (Yaw) ---
         playerBody.Rotate(Vector3.up * mouseX);
 
-        // --- Rotate camera (Pitch) ---
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-        // --- Camera sway (tilt left/right only, no vertical drifting) ---
         float swayZ = Mathf.Clamp(-smoothedMouseDelta.x * swayAmount, -swayClamp, swayClamp);
         float swayX = Mathf.Clamp(-smoothedMouseDelta.y * swayAmount, -swayClamp, swayClamp);
 

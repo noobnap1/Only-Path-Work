@@ -1,18 +1,37 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class DialogueTrigger : MonoBehaviour
 {
     [TextArea] public string dialogueText = "{Dialogue}";
     public string soundName = "{Sound}";
 
+    public InputActionReference interactActionRef; // Assign Player/Interact here in Inspector
+
     private bool playerIsNear = false;
 
-    void Update()
+    private void OnEnable()
     {
-        if (playerIsNear && Input.GetKeyDown(KeyCode.E))
+        if (interactActionRef != null)
         {
-            DialogueManager.Show(dialogueText, soundName);
+            interactActionRef.action.Enable();
+            interactActionRef.action.performed += OnInteract;
         }
+    }
+
+    private void OnDisable()
+    {
+        if (interactActionRef != null)
+        {
+            interactActionRef.action.performed -= OnInteract;
+            interactActionRef.action.Disable();
+        }
+    }
+
+    private void OnInteract(InputAction.CallbackContext context)
+    {
+        if (playerIsNear)
+            DialogueManager.Show(dialogueText, soundName);
     }
 
     private void OnTriggerEnter(Collider other)

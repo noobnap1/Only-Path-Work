@@ -531,11 +531,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b579291d62779074695350262e8d9c95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerBody: {fileID: 0}
-  mouseSensitivity: 200
+  playerBody: {fileID: 925329670}
+  mouseSensitivity: 1
   swayAmount: 2
   swaySmooth: 6
   swayClamp: 5
+  lookActionRef: {fileID: -5630151704836100654, guid: 052faaac586de48259a63d0c4782560b, type: 3}
 --- !u!64 &392172960
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1202,6 +1203,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueText: Why are you talking to me
   soundName: Boy
+  interactActionRef: {fileID: 1781555164194001046, guid: 052faaac586de48259a63d0c4782560b, type: 3}
 --- !u!1001 &785066040
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1908,6 +1910,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a81cfcca79fe8ed4eae33248604d9ac0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveActionRef: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  jumpActionRef: {fileID: -2099379676528639254, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   speed: 5
   jumpPower: 4.4
 --- !u!143 &925329669
@@ -2631,10 +2635,10 @@ MeshCollider:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1758705}
   - {fileID: 729905129}
+  - {fileID: 1012456079}
+  - {fileID: 1758705}
   - {fileID: 925329670}
   - {fileID: 889581191}
   - {fileID: 785066040}
   - {fileID: 780992319}
-  - {fileID: 1012456079}
