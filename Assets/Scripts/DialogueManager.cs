@@ -8,33 +8,46 @@ public class DialogueManager : MonoBehaviour
     public float letterDelay = 0.05f;
     public float fadeTime = 0.15f;
 
+    [Header("Dialogue Box Setup")]
+    public GameObject dialogueBoxPrefab; // Assign prefab via Inspector
+
     private static DialogueManager current;
 
     private CanvasGroup canvasGroup;
     private TextMeshProUGUI dialogueText;
     private AudioSource audioSource;
     private Coroutine typingCoroutine;
+    private GameObject dialogueBoxInstance;
 
     private void Awake()
     {
         current = this;
 
-        canvasGroup = GetComponent<CanvasGroup>();
-        if (canvasGroup == null)
-            canvasGroup = gameObject.AddComponent<CanvasGroup>();
+        // Instantiate and set up the DialogueBox
+        if (dialogueBoxPrefab == null)
+        {
+            Debug.LogError("Dialogue Box Prefab is not assigned in the inspector.");
+            return;
+        }
 
-        Transform textTransform = transform.Find("DialogueText");
+        dialogueBoxInstance = Instantiate(dialogueBoxPrefab, transform);
+        dialogueBoxInstance.SetActive(false);
+
+        canvasGroup = dialogueBoxInstance.GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+            canvasGroup = dialogueBoxInstance.AddComponent<CanvasGroup>();
+
+        Transform textTransform = dialogueBoxInstance.transform.Find("DialogueText");
         if (textTransform == null)
         {
-            Debug.LogError("DialogueText child not found.");
+            Debug.LogError("DialogueText child not found in dialogue box prefab.");
             return;
         }
 
         dialogueText = textTransform.GetComponent<TextMeshProUGUI>();
-        audioSource = GetComponent<AudioSource>() ?? gameObject.AddComponent<AudioSource>();
+        audioSource = dialogueBoxInstance.GetComponent<AudioSource>() ?? dialogueBoxInstance.AddComponent<AudioSource>();
 
         canvasGroup.alpha = 0f;
-        gameObject.SetActive(false); // Start hidden
     }
 
     public static void Show(string text, string soundName)
@@ -60,7 +73,7 @@ public class DialogueManager : MonoBehaviour
         if (typeSound == null)
             Debug.LogWarning($"Sound '{soundName}' not found in Resources/SpeechSounds/");
 
-        gameObject.SetActive(true);
+        dialogueBoxInstance.SetActive(true);
         typingCoroutine = StartCoroutine(TypeDialogue(dialogue, typeSound));
     }
 
@@ -105,8 +118,12 @@ public class DialogueManager : MonoBehaviour
 
     private void CleanupDialogue()
     {
-        dialogueText.text = "";
-        gameObject.SetActive(false);
+        if (dialogueText != null)
+            dialogueText.text = "";
+
+        if (dialogueBoxInstance != null)
+            dialogueBoxInstance.SetActive(false);
+
         typingCoroutine = null;
     }
 
