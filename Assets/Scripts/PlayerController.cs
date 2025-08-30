@@ -13,6 +13,10 @@ public class PlayerController : MonoBehaviour
     public float walkSpeed = 5f;
     public float jumpPower = 2f;
 
+    [Header("Look Settings")]
+    [Range(1, 200)]
+    public float mouseSensitivity = 100f; // 100 = normal, 200 = double speed
+
     [Header("Input Actions")]
     public InputActionReference moveActionRef;   // Vector2
     public InputActionReference lookActionRef;   // Vector2
@@ -56,12 +60,15 @@ public class PlayerController : MonoBehaviour
         moveInput = moveActionRef?.action.ReadValue<Vector2>() ?? Vector2.zero;
         lookInput = lookActionRef?.action.ReadValue<Vector2>() ?? Vector2.zero;
 
-        // Look (raw values from Input System, sensitivity handled in action asset)
-        float mouseX = lookInput.x;
-        float mouseY = lookInput.y;
+        // Apply mouse sensitivity scaling
+        float sensitivityMultiplier = mouseSensitivity / 100f;
+        float mouseX = lookInput.x * sensitivityMultiplier;
+        float mouseY = lookInput.y * sensitivityMultiplier;
 
+        // Rotate player horizontally
         transform.Rotate(Vector3.up * mouseX);
 
+        // Rotate camera vertically
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
         cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
@@ -70,6 +77,7 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
     {
         bool isGrounded = controller.isGrounded;
+
         if (isGrounded && verticalVelocity < 0f)
             verticalVelocity = -2f;
 
