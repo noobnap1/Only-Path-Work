@@ -7,11 +7,11 @@ using System.Collections;
 public class DialogueManager : MonoBehaviour
 {
     [Header("Settings")]
-    public float letterDelay = 0.05f;
-    public float fadeTime = 0.15f;
+    public float letterDelay = 0.05f;   // Delay between letters
+    public float fadeTime = 0.15f;      // Time for fade in/out
 
     [Header("References")]
-    public TextMeshProUGUI dialogueText; // Drag your TMP text here
+    public TextMeshProUGUI dialogueText; // Assign your TMP text object in Inspector
 
     private CanvasGroup canvasGroup;
     private AudioSource audioSource;
@@ -23,12 +23,15 @@ public class DialogueManager : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
 
         if (dialogueText == null)
-            Debug.LogError("DialogueText not assigned in Inspector!");
+            Debug.LogError("DialogueManager: dialogueText is not assigned!");
 
+        // Keep object active but hidden
         canvasGroup.alpha = 0f;
-        gameObject.SetActive(true); // keep active, just invisible
     }
 
+    /// <summary>
+    /// Show dialogue with optional typing sound (sound must be in Resources/SpeechSounds/).
+    /// </summary>
     public void ShowDialogue(string text, string soundName = "")
     {
         if (typingCoroutine != null)
@@ -42,7 +45,7 @@ public class DialogueManager : MonoBehaviour
         {
             typeSound = Resources.Load<AudioClip>($"SpeechSounds/{soundName}");
             if (typeSound == null)
-                Debug.LogWarning($"Sound '{soundName}' not found in Resources/SpeechSounds/");
+                Debug.LogWarning($"DialogueManager: Could not find sound '{soundName}' in Resources/SpeechSounds/");
         }
 
         typingCoroutine = StartCoroutine(TypeDialogue(text, typeSound));
@@ -55,13 +58,14 @@ public class DialogueManager : MonoBehaviour
         // Fade in
         yield return StartCoroutine(FadeCanvas(0f, 1f));
 
-        float lastSoundTime = 0f;
+        float lastSoundTime = -999f;
         float soundCooldown = 0.05f;
 
         foreach (char letter in sentence)
         {
             dialogueText.text += letter;
 
+            // Play typing sound if not space
             if (letter != ' ' && typeSound != null && Time.time - lastSoundTime >= soundCooldown)
             {
                 audioSource.PlayOneShot(typeSound);
@@ -98,6 +102,9 @@ public class DialogueManager : MonoBehaviour
         typingCoroutine = null;
     }
 
+    /// <summary>
+    /// Force cancel the dialogue immediately.
+    /// </summary>
     public void Cancel()
     {
         if (typingCoroutine != null)

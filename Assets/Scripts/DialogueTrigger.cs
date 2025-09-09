@@ -6,7 +6,11 @@ public class DialogueTrigger : MonoBehaviour
     [TextArea] public string dialogueText = "{Dialogue}";
     public string soundName = "{Sound}";
 
+    [Header("Input")]
     public InputActionReference interactActionRef; // Assign Player/Interact here in Inspector
+
+    [Header("References")]
+    public DialogueManager dialogueManager; // Drag your DialogueManager here in Inspector
 
     private bool playerIsNear = false;
 
@@ -30,8 +34,10 @@ public class DialogueTrigger : MonoBehaviour
 
     private void OnInteract(InputAction.CallbackContext context)
     {
-        if (playerIsNear)
-            DialogueManager.Show(dialogueText, soundName);
+        if (playerIsNear && dialogueManager != null)
+        {
+            dialogueManager.ShowDialogue(dialogueText, soundName);
+        }
     }
 
     private void OnTriggerEnter(Collider other)
