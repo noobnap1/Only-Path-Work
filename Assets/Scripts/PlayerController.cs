@@ -10,12 +10,19 @@ public class PlayerController : MonoBehaviour
     private CharacterController controller;
 
     [Header("Movement Settings")]
-    public float walkSpeed = 5f;
+    public float walkSpeed = 5f; // UNUSED NOW (replaced by maxSpeed)
     public float jumpPower = 2f;
+
+    [Header("Momentum / Acceleration")]
+    public float maxSpeed = 7f;        // Maximum running speed
+    public float acceleration = 10f;   // How fast you speed up
+    public float deceleration = 8f;    // How fast you slow down when letting go
+
+    private Vector3 momentumVelocity;  // Horizontal momentum
 
     [Header("Look Settings")]
     [Range(1, 200)]
-    public float mouseSensitivity = 100f; // 100 = normal, 200 = double speed
+    public float mouseSensitivity = 100f;
 
     [Header("Input Actions")]
     public InputActionReference moveActionRef;   // Vector2
@@ -78,6 +85,7 @@ public class PlayerController : MonoBehaviour
     {
         bool isGrounded = controller.isGrounded;
 
+        // Gravity handling
         if (isGrounded && verticalVelocity < 0f)
             verticalVelocity = -2f;
 
@@ -86,10 +94,35 @@ public class PlayerController : MonoBehaviour
 
         verticalVelocity += Physics.gravity.y * Time.fixedDeltaTime;
 
-        Vector3 move = transform.right * moveInput.x + transform.forward * moveInput.y;
-        move *= walkSpeed;
-        move.y = verticalVelocity;
+        // --- MOMENTUM SYSTEM ---
 
-        controller.Move(move * Time.fixedDeltaTime);
+        // 1. Desired input direction
+        Vector3 inputDir = (transform.right * moveInput.x + transform.forward * moveInput.y).normalized;
+
+        // 2. Accelerate when moving
+        if (inputDir.magnitude > 0.1f)
+        {
+            momentumVelocity = Vector3.MoveTowards(
+                momentumVelocity,
+                inputDir * maxSpeed,
+                acceleration * Time.fixedDeltaTime
+            );
+        }
+        else
+        {
+            // 3. Decelerate to zero when no input
+            momentumVelocity = Vector3.MoveTowards(
+                momentumVelocity,
+                Vector3.zero,
+                deceleration * Time.fixedDeltaTime
+            );
+        }
+
+        // 4. Apply vertical movement
+        Vector3 finalMove = momentumVelocity;
+        finalMove.y = verticalVelocity;
+
+        // 5. Move controller
+        controller.Move(finalMove * Time.fixedDeltaTime);
     }
 }
